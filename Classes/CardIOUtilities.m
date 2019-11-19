@@ -79,28 +79,26 @@ static ScanAvailabilityStatus cachedScanAvailabilityStatus = ScanAvailabilityUnk
       return NO;
     }
     
-    if (iOS_7_PLUS) {
-      // Check for video permission.
-      // But don't set cachedScanAvailabilityStatus here, as the user can change this permission at any time.
-      // (Actually, should the user go to Settings and change this permission for this app, apparently the system
-      // will immediately SIGKILL (force restart) this app. But let's not depend on this semi-documented behavior.)
-      AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-      if (authStatus == AVAuthorizationStatusDenied || authStatus == AVAuthorizationStatusRestricted){
-        return NO;
-      }
-      else {
-        // Either the user has already granted permission, or else the user has not yet been asked.
-        //
-        // For the latter case, while we could ask now, unfortunately the necessary
-        // [AVCaptureDevice requestAccessForMediaType:completionHandler:] method returns the user's choice
-        // to us asynchronously, which doesn't mix well with canReadCardWithCamera being synchronous.
-        //
-        // Rather than making a backward-incompatible change to canReadCardWithCamera, let's simply allow things
-        // to proceed. When the camera view is finally presented, then the user will be prompted to authorize
-        // or deny the video permission. If they choose "deny", then they'll probably understand why they're
-        // looking at a black screen.
-        return YES;
-      }
+    // Check for video permission.
+    // But don't set cachedScanAvailabilityStatus here, as the user can change this permission at any time.
+    // (Actually, should the user go to Settings and change this permission for this app, apparently the system
+    // will immediately SIGKILL (force restart) this app. But let's not depend on this semi-documented behavior.)
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (authStatus == AVAuthorizationStatusDenied || authStatus == AVAuthorizationStatusRestricted){
+      return NO;
+    }
+    else {
+      // Either the user has already granted permission, or else the user has not yet been asked.
+      //
+      // For the latter case, while we could ask now, unfortunately the necessary
+      // [AVCaptureDevice requestAccessForMediaType:completionHandler:] method returns the user's choice
+      // to us asynchronously, which doesn't mix well with canReadCardWithCamera being synchronous.
+      //
+      // Rather than making a backward-incompatible change to canReadCardWithCamera, let's simply allow things
+      // to proceed. When the camera view is finally presented, then the user will be prompted to authorize
+      // or deny the video permission. If they choose "deny", then they'll probably understand why they're
+      // looking at a black screen.
+      return YES;
     }
 #endif
     

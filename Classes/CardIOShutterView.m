@@ -22,7 +22,7 @@
 
 - (id)init {
   if((self = [super init])) {
-    self.backgroundColor = [UIColor darkGrayColor].CGColor;
+    self.backgroundColor = [UIColor clearColor].CGColor;
   }
   return self;
 }

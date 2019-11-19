@@ -14,9 +14,7 @@
 }
 
 + (UIFont *)defaultTextLabelFontForCellStyle:(UITableViewCellStyle)cellStyle fontSize:(CGFloat)fontSize {
-  return (iOS_7_PLUS
-          ? [UIFont preferredFontForTextStyle:@"UICTFontTextStyleBody"/*UIFontTextStyleBody*/]
-          : [UIFont systemFontOfSize:fontSize]);
+  return [UIFont preferredFontForTextStyle:@"UICTFontTextStyleBody"/*UIFontTextStyleBody*/];
 }
 
 + (UIFont *)defaultDetailTextLabelFontForCellStyle:(UITableViewCellStyle)cellStyle {
@@ -25,9 +23,7 @@
 }
 
 + (UIFont *)defaultDetailTextLabelFontForCellStyle:(UITableViewCellStyle)cellStyle fontSize:(CGFloat)fontSize {
-  return (iOS_7_PLUS
-          ? [UIFont preferredFontForTextStyle:@"UICTFontTextStyleBody"/*UIFontTextStyleBody*/]
-          : [UIFont systemFontOfSize:fontSize]);
+  return [UIFont preferredFontForTextStyle:@"UICTFontTextStyleBody"/*UIFontTextStyleBody*/];
 }
 
 + (CGFloat)defaultTextLabelFontSizeForCellStyle:(UITableViewCellStyle)cellStyle {

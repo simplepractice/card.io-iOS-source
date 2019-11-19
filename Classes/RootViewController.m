@@ -53,7 +53,7 @@
 @property(nonatomic, assign, readwrite) NSInteger   i18nLanguageIndex;
 @property(nonatomic, assign, readwrite) NSInteger   i18nPhase;
 @property(nonatomic, strong, readwrite) CardIOPaymentViewController *i18nCardIOPaymentViewController;
-@property(nonatomic, strong, readwrite) UIAlertView *i18nAlertView;
+@property(nonatomic, strong, readwrite) UIAlertController *i18nAlertController;
 @property(nonatomic, strong, readwrite) UIView      *i18nAlertViewBackground;
 
 @end
@@ -96,11 +96,8 @@
   paymentVC.suppressScanConfirmation = self.confirmSwitch ? !self.confirmSwitch.on : NO;
   paymentVC.suppressScannedCardImage = self.hideCardImageSwitch ? self.hideCardImageSwitch.on : NO;
   paymentVC.maskManualEntryDigits = self.doABTestingSwitch.on;
+  paymentVC.modalPresentationStyle = UIModalPresentationFullScreen;
 
-  if (self.modalPresentationStyleSegment) {
-    paymentVC.modalPresentationStyle = (UIModalPresentationStyle)self.modalPresentationStyleSegment.selectedSegmentIndex;
-  }
-  
   [self presentViewController:paymentVC animated:YES completion:nil];
 }
 
@@ -228,9 +225,9 @@
     [self.i18nCardIOPaymentViewController dismissViewControllerAnimated:NO completion:nil];
     self.i18nCardIOPaymentViewController = nil;
   }
-  else if (self.i18nAlertView) {
-    [self.i18nAlertView dismissWithClickedButtonIndex:0 animated:NO];
-    self.i18nAlertView = nil;
+  else if (self.i18nAlertController) {
+    [self.i18nAlertController dismissViewControllerAnimated:NO completion:nil];
+    self.i18nAlertController = nil;
   }
 }
 
@@ -370,10 +367,6 @@
 
 - (BOOL)prefersStatusBarHidden {
   return [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIStatusBarHidden"] boolValue];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-  return YES;
 }
 
 - (BOOL)shouldAutorotate {

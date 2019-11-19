@@ -38,16 +38,16 @@ NSString *const kCardIOPassthroughFragmentShader = SHADER_STRING
 @implementation CardIOGPUTransformFilter
 
 - (id)initWithSize:(CGSize)size {
-  if((self = [super initWithSize:size vertexShaderSrc:kCardIOTransformVertexShader fragmentShaderSrc:kCardIOPassthroughFragmentShader])) {
+  if ((self = [super initWithSize:size vertexShaderSrc:kCardIOTransformVertexShader fragmentShaderSrc:kCardIOPassthroughFragmentShader])) {
     [_gpuRenderer withContextDo:^{
       // Get our matrix handles
-      _transformMatrixUniform = [_gpuRenderer uniformIndex:@"transformMatrix"];
-      _orthographicMatrixUniform = [_gpuRenderer uniformIndex:@"orthographicMatrix"];
+      self->_transformMatrixUniform = [self->_gpuRenderer uniformIndex:@"transformMatrix"];
+      self->_orthographicMatrixUniform = [self->_gpuRenderer uniformIndex:@"orthographicMatrix"];
       
       // Set up the ortho matrix
       // Could hard-code this into the shader. But it's easier to understand in this form, I think.
-      [[self class] loadOrthoMatrix:orthographicMatrix left:-1.0 right:1.0 bottom:-1.0 top:1.0 near:-1.0 far:1.0];
-      glUniformMatrix4fv(_orthographicMatrixUniform, 1, GL_FALSE, orthographicMatrix);
+      [[self class] loadOrthoMatrix:self->orthographicMatrix left:-1.0 right:1.0 bottom:-1.0 top:1.0 near:-1.0 far:1.0];
+      glUniformMatrix4fv(self->_orthographicMatrixUniform, 1, GL_FALSE, self->orthographicMatrix);
     }];
   }
   return self;
@@ -56,9 +56,9 @@ NSString *const kCardIOPassthroughFragmentShader = SHADER_STRING
 // Sets the matrix data for use with the vertex shader
 - (void)setPerspectiveMat:(float *)matrix {
   [_gpuRenderer withContextDo:^{
-    [_gpuRenderer prepareForUse];
+    [self->_gpuRenderer prepareForUse];
     //  CardIOLog(@"GL perspective matrix: \n%@", [[self class] matrixAsString:matrix size:4 rowMajor:NO]);
-    glUniformMatrix4fv(_transformMatrixUniform, 1, GL_FALSE, matrix);
+    glUniformMatrix4fv(self->_transformMatrixUniform, 1, GL_FALSE, matrix);
   }];
 }
 

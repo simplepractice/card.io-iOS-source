@@ -16,7 +16,7 @@
 @property(nonatomic, assign, readwrite) BOOL currentViewControllerIsDataEntry;
 @property(nonatomic, assign, readwrite) UIInterfaceOrientation initialInterfaceOrientationForViewcontroller;
 
-@property(nonatomic, strong, readwrite) UIAlertView *unauthorizedForScanAlert;
+@property(nonatomic, strong, readwrite) UIAlertController *unauthorizedForScanAlert;
 @property(nonatomic, assign, readwrite) BOOL shouldStoreStatusBarStyle;
 @property(nonatomic, assign, readwrite) UIStatusBarStyle originalStatusBarStyle;
 @property(nonatomic, assign, readwrite) BOOL statusBarWasOriginallyHidden;

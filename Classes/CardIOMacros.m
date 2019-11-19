@@ -43,7 +43,7 @@
   static BOOL _appHasViewControllerBasedStatusBar = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    _appHasViewControllerBasedStatusBar = !iOS_7_PLUS || [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
+    _appHasViewControllerBasedStatusBar = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
   });
   return _appHasViewControllerBasedStatusBar;
 }

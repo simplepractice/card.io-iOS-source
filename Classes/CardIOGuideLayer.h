@@ -32,11 +32,9 @@
 
 - (void)didRotateToDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
 
-@property(nonatomic, strong, readwrite) UIColor *guideColor;
 @property(nonatomic, strong, readwrite) CardIOVideoFrame *videoFrame;
 @property(nonatomic, assign, readwrite) CFTimeInterval animationDuration;
 @property(nonatomic, assign, readwrite) UIDeviceOrientation deviceOrientation;
-@property(nonatomic, strong, readwrite) CAGradientLayer *fauxCardLayer;
 
 @end
 

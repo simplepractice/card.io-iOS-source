@@ -77,13 +77,13 @@
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
   id row = self.rows[indexPath.row];
-  if([row conformsToProtocol:@protocol(UITableViewDataSource)]) {
+  if ([row conformsToProtocol:@protocol(UITableViewDataSource)]) {
     id<UITableViewDataSource> dataSourceRow = row;
     return [dataSourceRow tableView:aTableView cellForRowAtIndexPath:indexPath];
-  } else if([row isKindOfClass:[UITableViewCell class]]) {
+  } else if ([row isKindOfClass:[UITableViewCell class]]) {
     return row;
   } else {
-    return nil;
+    @throw @"Can't dequeue cell for row";
   }
 }
 

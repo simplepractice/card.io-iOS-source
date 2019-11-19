@@ -5,6 +5,7 @@
 
 #import "CardIOLocalizer.h"
 #import "CardIOBundle.h"
+#import "UIViewController+Cardio.h"
 
 #pragma mark CardIOLocalizer
 
@@ -398,12 +399,11 @@ NSString *CardIOLocalizedStringWithAlert(NSString *key,
   NSString *string = [[CardIOLocalizer localizerForLanguageOrLocale:languageOrLocale forBundle:bundle] localizeString:key];
   if ([string length] == 0) {
     if (showMissingKeyAlert) {
-      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Missing Key"
-                                                      message:[NSString stringWithFormat:@"No %@ string for key '%@'", languageOrLocale, key]
-                                                     delegate:nil
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
-      [alert show];
+      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString localizedStringWithFormat:@"Missing Key"]
+                                                                               message:[NSString stringWithFormat:@"No %@ string for key '%@'", languageOrLocale, key]
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+      [alertController addAction:[UIAlertAction actionWithTitle:[NSString localizedStringWithFormat:@"OK"] style:UIAlertActionStyleDefault handler:nil]];
+      [[UIViewController topViewController] presentViewController:alertController animated:TRUE completion:nil];
     }
     string = [[CardIOLocalizer fallbackLocalizerForBundle:bundle] localizeString:key];
   }

@@ -95,6 +95,8 @@
         transform = CGAffineTransformTranslate(transform, 0, image.size.width);
         transform = CGAffineTransformRotate(transform, (CGFloat)-M_PI_2);
         break;
+      default:
+        break;
     }
     
     CGFloat newWidth;
@@ -298,7 +300,6 @@
     
 #if SIMULATE_CAMERA
     [(SimulatedCameraLayer *)self.previewLayer updateOrientation];
-    [self captureOutput:nil didOutputSampleBuffer:nil fromConnection:nil];
 #endif
   }
 }
@@ -547,7 +548,6 @@
 #if SIMULATE_CAMERA
 - (void)simulateNewFrame {
   [(SimulatedCameraLayer *)self.previewLayer nextImage];
-  [self captureOutput:nil didOutputSampleBuffer:nil fromConnection:nil];
 }
 
 - (void)considerItScanned {

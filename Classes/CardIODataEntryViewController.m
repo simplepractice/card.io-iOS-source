@@ -87,35 +87,12 @@
 
 - (void)calculateRelevantViewFrame {
   self.relevantViewFrame = self.view.bounds;
-
-  if (!iOS_7_PLUS) {
-    // On iOS 7, setting 'edgesForExtendedLayout = UIRectEdgeNone' takes care of the offset
-    if (self.navigationController.navigationBar.translucent) {
-      CGRect relevantViewFrame = self.view.bounds;
-      CGFloat barsHeight = NavigationBarHeightForCurrentOrientation(self.navigationController);
-      if (self.navigationController.modalPresentationStyle == UIModalPresentationFullScreen && !self.statusBarHidden) {
-        barsHeight += kStatusBarHeight;
-      }
-      relevantViewFrame.origin.y += barsHeight;
-      relevantViewFrame.size.height -= barsHeight;
-      self.relevantViewFrame = relevantViewFrame;
-    }
-  }
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (iOS_7_PLUS) {
-    self.automaticallyAdjustsScrollViewInsets = YES;
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-  }
-  else {
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    self.wantsFullScreenLayout = YES;
-    #pragma clang diagnostic pop
-  }
+  self.edgesForExtendedLayout = UIRectEdgeNone;
 
   [self calculateRelevantViewFrame];
 
@@ -181,9 +158,7 @@
 
   // On iOS 7, remove the edge inset from the table for a more consistent appearance
   // when there are multiple inputs in a row.
-  if (iOS_7_PLUS) {
-    self.tableView.separatorInset = UIEdgeInsetsZero;
-  }
+  self.tableView.separatorInset = UIEdgeInsetsZero;
 
   NSMutableArray *sections = [NSMutableArray arrayWithCapacity:1];
   self.visibleTextFields = [NSMutableArray arrayWithCapacity:4];
@@ -377,17 +352,15 @@
 
   [self.scrollView addSubview:self.tableView];
 
-  if (iOS_7_PLUS) {
-    self.leftTableBorderForIOS7 = [[UIView alloc] init];
-    self.leftTableBorderForIOS7.backgroundColor = [UIColor colorWithWhite:kiOS7TableViewBorderColor alpha:1];
-    self.leftTableBorderForIOS7.hidden = YES;
-    [self.scrollView addSubview:self.leftTableBorderForIOS7];
+  self.leftTableBorderForIOS7 = [[UIView alloc] init];
+  self.leftTableBorderForIOS7.backgroundColor = [UIColor colorWithWhite:kiOS7TableViewBorderColor alpha:1];
+  self.leftTableBorderForIOS7.hidden = YES;
+  [self.scrollView addSubview:self.leftTableBorderForIOS7];
 
-    self.rightTableBorderForIOS7 = [[UIView alloc] init];
-    self.rightTableBorderForIOS7.backgroundColor = [UIColor colorWithWhite:kiOS7TableViewBorderColor alpha:1];
-    self.rightTableBorderForIOS7.hidden = YES;
-    [self.scrollView addSubview:self.rightTableBorderForIOS7];
-  }
+  self.rightTableBorderForIOS7 = [[UIView alloc] init];
+  self.rightTableBorderForIOS7.backgroundColor = [UIColor colorWithWhite:kiOS7TableViewBorderColor alpha:1];
+  self.rightTableBorderForIOS7.hidden = YES;
+  [self.scrollView addSubview:self.rightTableBorderForIOS7];
 
   if (self.cardView) {
     // Animations look better if the cardView is in front of the tableView
@@ -405,20 +378,8 @@
 
   [super viewWillAppear:animated];
 
-  if (self.navigationController.modalPresentationStyle == UIModalPresentationFullScreen && !self.statusBarHidden) {
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-    if (iOS_7_PLUS) {
-      [self setNeedsStatusBarAppearanceUpdate];
-    }
-  }
-
   if (!self.context.keepStatusBarStyleForCardIO) {
-    if (iOS_7_PLUS) {
-      [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    }
-    else {
-      [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    }
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
   }
 
   [self.navigationController setNavigationBarHidden:NO animated:animated];
@@ -581,27 +542,6 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidUnload {
-  self.tableView.delegate = nil, self.tableView.dataSource = nil, self.tableView = nil;
-
-  self.tableViewDelegate = nil;
-  self.numberRowTextFieldDelegate = nil;
-  self.expiryTextFieldDelegate = nil;
-  self.cvvRowTextFieldDelegate = nil;
-  self.postalCodeRowTextFieldDelegate = nil;
-  self.cardholderNameRowTextFieldDelegate = nil;
-
-  self.expiryTextField = nil;
-  self.numberTextField = nil;
-  self.cvvTextField = nil;
-  self.postalCodeTextField = nil;
-  self.cardholderNameTextField = nil;
-
-  self.visibleTextFields = nil;
-
-  [super viewDidUnload];
-}
-
 #pragma mark - orientation-based subview layout
 
 - (BOOL)isWideScreenMode {
@@ -610,10 +550,8 @@
 }
 
 - (void)showTableBorders:(BOOL)showTableBorders {
-  if (iOS_7_PLUS) {
-    self.leftTableBorderForIOS7.hidden = !showTableBorders;
-    self.rightTableBorderForIOS7.hidden = !showTableBorders;
-  }
+  self.leftTableBorderForIOS7.hidden = !showTableBorders;
+  self.rightTableBorderForIOS7.hidden = !showTableBorders;
 }
 
 - (void)layoutForCurrentOrientation {
@@ -631,8 +569,8 @@
       cardViewFrame.size.width = (CGFloat)floor(MAX(self.scrollView.bounds.size.width, self.scrollView.bounds.size.height) * kLandscapeZoomedInCardImageSizePercent);
       cardViewFrame.size.height = (CGFloat)floor(self.cardImage.size.height * (cardViewFrame.size.width / self.cardImage.size.width));
       if (!showTableView) {
-        cardViewFrame.size.width *= 1.5;
-        cardViewFrame.size.height *= 1.5;
+        cardViewFrame.size.width *= 1.5f;
+        cardViewFrame.size.height *= 1.5f;
       }
     }
     else {
@@ -649,27 +587,22 @@
         tableViewFrame.size.height = self.scrollView.bounds.size.height;
         tableViewFrame.origin.x = CGRectGetMaxX(self.scrollView.bounds) - tableViewFrame.size.width - kCardPadding;
 
-        if (iOS_7_PLUS) {
-          NSInteger lastSection = [self.tableView numberOfSections] - 1;
-          NSInteger lastRow = [self.tableView numberOfRowsInSection:lastSection] - 1;
-          UITableViewCell *firstCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-          UITableViewCell *lastCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]];
-          tableViewFrame.origin.y = kCardPadding - firstCell.frame.origin.y;
+        NSInteger lastSection = [self.tableView numberOfSections] - 1;
+        NSInteger lastRow = [self.tableView numberOfRowsInSection:lastSection] - 1;
+        UITableViewCell *firstCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        UITableViewCell *lastCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]];
+        tableViewFrame.origin.y = kCardPadding - firstCell.frame.origin.y;
 
-          CGRect leftTableBorderFrame = self.leftTableBorderForIOS7.frame;
-          leftTableBorderFrame.origin.x = tableViewFrame.origin.x - 0.5f;
-          leftTableBorderFrame.origin.y = tableViewFrame.origin.y + firstCell.frame.origin.y;
-          leftTableBorderFrame.size.height = lastCell.frame.origin.y + lastCell.frame.size.height - firstCell.frame.origin.y + 0.5f;
-          leftTableBorderFrame.size.width = 0.5f;
-          self.leftTableBorderForIOS7.frame = leftTableBorderFrame;
+        CGRect leftTableBorderFrame = self.leftTableBorderForIOS7.frame;
+        leftTableBorderFrame.origin.x = tableViewFrame.origin.x - 0.5f;
+        leftTableBorderFrame.origin.y = tableViewFrame.origin.y + firstCell.frame.origin.y;
+        leftTableBorderFrame.size.height = lastCell.frame.origin.y + lastCell.frame.size.height - firstCell.frame.origin.y + 0.5f;
+        leftTableBorderFrame.size.width = 0.5f;
+        self.leftTableBorderForIOS7.frame = leftTableBorderFrame;
 
-          CGRect rightTableBorderFrame = leftTableBorderFrame;
-          rightTableBorderFrame.origin.x = tableViewFrame.origin.x + tableViewFrame.size.width;
-          self.rightTableBorderForIOS7.frame = rightTableBorderFrame;
-        }
-        else {
-          tableViewFrame.origin.y = 0;
-        }
+        CGRect rightTableBorderFrame = leftTableBorderFrame;
+        rightTableBorderFrame.origin.x = tableViewFrame.origin.x + tableViewFrame.size.width;
+        self.rightTableBorderForIOS7.frame = rightTableBorderFrame;
       }
       else {
         cardViewFrame.origin.x = (CGFloat)floor((self.scrollView.bounds.size.width - cardViewFrame.size.width) / 2);
@@ -678,11 +611,9 @@
         tableViewFrame = self.scrollView.bounds;
         tableViewFrame.origin.y = CGRectGetMaxY(cardViewFrame);
 
-        if (iOS_7_PLUS) {
-          CGRect tableBorderFrame = CGRectMake(0, 0, 0, 0);
-          self.leftTableBorderForIOS7.frame = tableBorderFrame;
-          self.rightTableBorderForIOS7.frame = tableBorderFrame;
-        }
+        CGRect tableBorderFrame = CGRectMake(0, 0, 0, 0);
+        self.leftTableBorderForIOS7.frame = tableBorderFrame;
+        self.rightTableBorderForIOS7.frame = tableBorderFrame;
       }
     }
     else {
@@ -708,32 +639,28 @@
       tableViewFrame.origin.x = (CGFloat)floor((self.scrollView.bounds.size.width - tableWidth) / 2);
       tableViewFrame.origin.y = 0;
 
-      if (iOS_7_PLUS) {
-        NSInteger lastSection = [self.tableView numberOfSections] - 1;
-        NSInteger lastRow = [self.tableView numberOfRowsInSection:lastSection] - 1;
-        UITableViewCell *firstCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-        UITableViewCell *lastCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]];
+      NSInteger lastSection = [self.tableView numberOfSections] - 1;
+      NSInteger lastRow = [self.tableView numberOfRowsInSection:lastSection] - 1;
+      UITableViewCell *firstCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+      UITableViewCell *lastCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]];
 
-        CGRect leftTableBorderFrame = self.leftTableBorderForIOS7.frame;
-        leftTableBorderFrame.origin.x = tableViewFrame.origin.x - 0.5f;
-        leftTableBorderFrame.origin.y = tableViewFrame.origin.y + firstCell.frame.origin.y;
-        leftTableBorderFrame.size.height = lastCell.frame.origin.y + lastCell.frame.size.height - firstCell.frame.origin.y;
-        leftTableBorderFrame.size.width = 0.5f;
-        self.leftTableBorderForIOS7.frame = leftTableBorderFrame;
+      CGRect leftTableBorderFrame = self.leftTableBorderForIOS7.frame;
+      leftTableBorderFrame.origin.x = tableViewFrame.origin.x - 0.5f;
+      leftTableBorderFrame.origin.y = tableViewFrame.origin.y + firstCell.frame.origin.y;
+      leftTableBorderFrame.size.height = lastCell.frame.origin.y + lastCell.frame.size.height - firstCell.frame.origin.y;
+      leftTableBorderFrame.size.width = 0.5f;
+      self.leftTableBorderForIOS7.frame = leftTableBorderFrame;
 
-        CGRect rightTableBorderFrame = leftTableBorderFrame;
-        rightTableBorderFrame.origin.x = tableViewFrame.origin.x + tableViewFrame.size.width;
-        self.rightTableBorderForIOS7.frame = rightTableBorderFrame;
-      }
+      CGRect rightTableBorderFrame = leftTableBorderFrame;
+      rightTableBorderFrame.origin.x = tableViewFrame.origin.x + tableViewFrame.size.width;
+      self.rightTableBorderForIOS7.frame = rightTableBorderFrame;
     }
     else {
       tableViewFrame = self.scrollView.bounds;
 
-      if (iOS_7_PLUS) {
-        CGRect tableBorderFrame = CGRectMake(0, 0, 0, 0);
-        self.leftTableBorderForIOS7.frame = tableBorderFrame;
-        self.rightTableBorderForIOS7.frame = tableBorderFrame;
-      }
+      CGRect tableBorderFrame = CGRectMake(0, 0, 0, 0);
+      self.leftTableBorderForIOS7.frame = tableBorderFrame;
+      self.rightTableBorderForIOS7.frame = tableBorderFrame;
     }
 
     self.tableView.frame = tableViewFrame;
@@ -741,37 +668,6 @@
     self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width,
                                              self.tableView.frame.origin.y + CGRectGetMaxY([self.tableView rectForSection:0]));
   }
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-  self.activeTextField = nil;
-  for(UITextField *textField in self.visibleTextFields) {
-    if ([textField isFirstResponder]) {
-      self.activeTextField = textField;
-      [textField resignFirstResponder];
-      break;
-    }
-  }
-
-  [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-  [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-
-  if (self.view.bounds.size.height != self.oldHeight) {
-    [self showTableBorders:NO];
-
-    [UIView animateWithDuration:0.4
-                     animations:^{
-                       [self layoutForCurrentOrientation];
-                     }
-                     completion:^(BOOL finished) {
-                       [self showTableBorders:YES];
-                     }];
-  }
-
-  [self.activeTextField becomeFirstResponder];
 }
 
 #pragma mark - Status bar preferences (iOS 7)
@@ -787,19 +683,15 @@
 #pragma mark -
 
 - (void)popToTop {
-  if (iOS_7_PLUS) {
-    // iOS 7 apparently has a quirk in which keyboard dismisses only after the pop.
-    // We fix this by explicitly calling resignFirstResponder on all fields
-    // to ensure keyboard dismisses immediately.
-    for (UITextField *field in self.visibleTextFields) {
-      [field resignFirstResponder];
-    }
+  // iOS 7 apparently has a quirk in which keyboard dismisses only after the pop.
+  // We fix this by explicitly calling resignFirstResponder on all fields
+  // to ensure keyboard dismisses immediately.
+  for (UITextField *field in self.visibleTextFields) {
+    [field resignFirstResponder];
   }
 
-  if (iOS_7_PLUS) {
-    // On iOS 7, looks better if we start sliding away the nav bar prior to transitioning to camera-view.
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
-  }
+  // On iOS 7, looks better if we start sliding away the nav bar prior to transitioning to camera-view.
+  [self.navigationController setNavigationBarHidden:YES animated:YES];
 
   ((CardIOPaymentViewController *)self.navigationController).currentViewControllerIsDataEntry = NO;
   ((CardIOPaymentViewController *)self.navigationController).initialInterfaceOrientationForViewcontroller = [UIApplication sharedApplication].statusBarOrientation;
@@ -1006,6 +898,25 @@
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  self.tableView.delegate = nil;
+  self.tableView.dataSource = nil;
+  self.tableView = nil;
+
+  self.tableViewDelegate = nil;
+  self.numberRowTextFieldDelegate = nil;
+  self.expiryTextFieldDelegate = nil;
+  self.cvvRowTextFieldDelegate = nil;
+  self.postalCodeRowTextFieldDelegate = nil;
+  self.cardholderNameRowTextFieldDelegate = nil;
+
+  self.expiryTextField = nil;
+  self.numberTextField = nil;
+  self.cvvTextField = nil;
+  self.postalCodeTextField = nil;
+  self.cardholderNameTextField = nil;
+
+  self.visibleTextFields = nil;
 }
 
 // this could maybe become a property of CardIOCreditCardInfo, but that's public facing....

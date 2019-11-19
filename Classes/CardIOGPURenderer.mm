@@ -112,6 +112,7 @@ const GLubyte Indices[] = {
 }
 
 - (void) setupGL {
+  __weak CardIOGPURenderer *weakSelf = self;
   [self withContextDo:^{
     // FRAMEBUFFER
     
@@ -124,7 +125,7 @@ const GLubyte Indices[] = {
     GLuint colorRenderBuffer;
     glGenRenderbuffers(1, &colorRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, colorRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, (GLsizei)_size.width, (GLsizei)_size.height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, (GLsizei)weakSelf.size.width, (GLsizei)weakSelf.size.height);
     
     // assoc renderbuffer with framebuffer
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderBuffer);
@@ -132,8 +133,8 @@ const GLubyte Indices[] = {
     
     // VERTICES
     
-    float w = (float)_size.width;
-    float h = (float)_size.height;
+    float w = (float)weakSelf.size.width;
+    float h = (float)weakSelf.size.height;
     
     const Vertex v[] = {
       {{w, 0, 0}, {1, 0}},
@@ -156,7 +157,7 @@ const GLubyte Indices[] = {
     
     // TEXTURES
     // Create texture handle
-    glGenTextures(1, &_inputTexture);
+    glGenTextures(1, &self->_inputTexture);
   }];
 }
 
@@ -167,16 +168,16 @@ const GLubyte Indices[] = {
     // compile shaders, prepare program
     if ([[self class] compileShader:&vertexShader type:GL_VERTEX_SHADER source:vertexShaderSrc] &&
         [[self class] compileShader:&fragmentShader type:GL_FRAGMENT_SHADER source:fragmentShaderSrc] &&
-        [[self class] prepareProgram:&_programHandle vertexShader:vertexShader fragmentShader:fragmentShader]) {
+        [[self class] prepareProgram:&self->_programHandle vertexShader:vertexShader fragmentShader:fragmentShader]) {
       // use program!
-      glUseProgram(_programHandle);
+      glUseProgram(self->_programHandle);
       
-      _positionSlot = glGetAttribLocation(_programHandle, "position");
-      glEnableVertexAttribArray(_positionSlot);
+      self->_positionSlot = glGetAttribLocation(self->_programHandle, "position");
+      glEnableVertexAttribArray(self->_positionSlot);
       
-      _texCoordSlot = glGetAttribLocation(_programHandle, "texCoordIn");
-      glEnableVertexAttribArray(_texCoordSlot);
-      _textureUniform = glGetUniformLocation(_programHandle, "texture");
+      self->_texCoordSlot = glGetAttribLocation(self->_programHandle, "texCoordIn");
+      glEnableVertexAttribArray(self->_texCoordSlot);
+      self->_textureUniform = glGetUniformLocation(self->_programHandle, "texture");
       
       successful = YES;
     }
@@ -197,7 +198,7 @@ const GLubyte Indices[] = {
 
 - (void)prepareTexture {
   [self withContextDo:^{
-    glBindTexture(GL_TEXTURE_2D, _inputTexture);
+    glBindTexture(GL_TEXTURE_2D, self->_inputTexture);
     
     // Bi-linear interpolation for both minification and magnification
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -215,15 +216,15 @@ const GLubyte Indices[] = {
     [self prepareForUse];
     glViewport(0, 0, (GLsizei)targetSize.width, (GLsizei)targetSize.height);
     
-    glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE,
+    glVertexAttribPointer(self->_positionSlot, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), 0);
     
-    glVertexAttribPointer(_texCoordSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *) (sizeof(float) * 3));
+    glVertexAttribPointer(self->_texCoordSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *) (sizeof(float) * 3));
     
     // Bind image to _textureUniform
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _inputTexture);
-    glUniform1f(_textureUniform, 0);
+    glBindTexture(GL_TEXTURE_2D, self->_inputTexture);
+    glUniform1f(self->_textureUniform, 0);
     
     glDrawElements(GL_TRIANGLES, sizeof(Indices)/sizeof(Indices[0]), GL_UNSIGNED_BYTE, 0);
   }];
@@ -234,7 +235,7 @@ const GLubyte Indices[] = {
 - (GLuint) uniformIndex:(NSString *)uniformName {
   __block GLuint uniformIndex = -1;
   [self withContextDo:^{
-    uniformIndex = glGetUniformLocation(_programHandle, [uniformName UTF8String]);
+    uniformIndex = glGetUniformLocation(self->_programHandle, [uniformName UTF8String]);
   }];
   return uniformIndex;
 }

@@ -28,6 +28,7 @@
 
 #define kAllEdgesFoundScoreDecay 0.5f
 #define kNumEdgesFoundScoreDecay 0.5f
+#define kStrokeLayerName @"strokeLayer"
 
 #pragma mark - Types
 
@@ -44,15 +45,6 @@ typedef enum {
 
 @property(nonatomic, weak, readwrite) id<CardIOGuideLayerDelegate> guideLayerDelegate;
 @property(nonatomic, strong, readwrite) CAShapeLayer *backgroundOverlay;
-@property(nonatomic, strong, readwrite) CAShapeLayer *topLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *bottomLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *leftLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *rightLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *topLeftLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *topRightLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *bottomLeftLayer;
-@property(nonatomic, strong, readwrite) CAShapeLayer *bottomRightLayer;
-@property(nonatomic, assign, readwrite) BOOL guidesLockedOn;
 @property(nonatomic, assign, readwrite) float edgeScoreTop;
 @property(nonatomic, assign, readwrite) float edgeScoreRight;
 @property(nonatomic, assign, readwrite) float edgeScoreBottom;
@@ -76,7 +68,6 @@ typedef enum {
     
     _deviceOrientation = UIDeviceOrientationPortrait;
 
-    _guidesLockedOn = NO;
     _edgeScoreTop = 0.0f;
     _edgeScoreRight = 0.0f;
     _edgeScoreBottom = 0.0f;
@@ -85,38 +76,17 @@ typedef enum {
     _allEdgesFoundDecayedScore = 0.0f;
     _numEdgesFoundDecayedScore = 0.0f;
 
-    _fauxCardLayer = [CAGradientLayer layer];
-    _topLayer = [CAShapeLayer layer];
-    _bottomLayer = [CAShapeLayer layer];
-    _leftLayer = [CAShapeLayer layer];
-    _rightLayer = [CAShapeLayer layer];
-    
-    _topLeftLayer = [CAShapeLayer layer];
-    _topRightLayer = [CAShapeLayer layer];
-    _bottomLeftLayer = [CAShapeLayer layer];
-    _bottomRightLayer = [CAShapeLayer layer];
-    
-    _fauxCardLayer.cornerRadius = 0.0f;
-    _fauxCardLayer.masksToBounds = YES;
-    _fauxCardLayer.borderWidth = 0.0f;
-    
-    _fauxCardLayer.startPoint = CGPointMake(0.5f, 0.0f); // top center
-    _fauxCardLayer.endPoint = CGPointMake(0.5f, 1.0f); // bottom center
-    _fauxCardLayer.locations = [NSArray arrayWithObjects:
-                                [NSNumber numberWithFloat:0.0f],
-                                [NSNumber numberWithFloat:1.0f],
-                                nil];
-    _fauxCardLayer.colors = [NSArray arrayWithObjects:
-                             (id)[UIColor colorWithWhite:1.0f alpha:0.2f].CGColor,
-                             (id)[UIColor colorWithWhite:0.0f alpha:0.2f].CGColor,
-                             nil];
-    [self addSublayer:_fauxCardLayer];
-
     _backgroundOverlay = [CAShapeLayer layer];
-    _backgroundOverlay.cornerRadius = 0.0f;
-    _backgroundOverlay.masksToBounds = YES;
-    _backgroundOverlay.borderWidth = 0.0f;
-    _backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.7f].CGColor;
+    _backgroundOverlay.fillColor = [UIColor colorWithWhite:0 alpha:0.5f].CGColor;
+
+    CAShapeLayer *strokeLayer = [CAShapeLayer layer];
+    strokeLayer.name = kStrokeLayerName;
+    strokeLayer.frame = self.bounds;
+    strokeLayer.lineWidth = 1;
+    strokeLayer.fillColor = UIColor.clearColor.CGColor;
+    strokeLayer.strokeColor = UIColor.whiteColor.CGColor;
+    [_backgroundOverlay addSublayer:strokeLayer];
+
     [self addSublayer:_backgroundOverlay];
 
 #if CARDIO_DEBUG
@@ -126,27 +96,6 @@ typedef enum {
     _debugOverlay.borderWidth = 0.0f;
     [self addSublayer:_debugOverlay];
 #endif
-    
-    NSArray *edgeLayers = [NSArray arrayWithObjects:
-                           _topLayer,
-                           _bottomLayer,
-                           _leftLayer,
-                           _rightLayer,
-                           _topLeftLayer,
-                           _topRightLayer,
-                           _bottomLeftLayer,
-                           _bottomRightLayer,
-                           nil];
-    
-    for(CAShapeLayer *layer in edgeLayers) {
-      layer.frame = CGRectZeroWithSize(self.bounds.size);
-      layer.lineCap = kCALineCapButt;
-      layer.lineWidth = [self lineWidth];
-      layer.fillColor = [UIColor clearColor].CGColor;
-      layer.strokeColor = kDefaultGuideColor.CGColor;
-      
-      [self addSublayer:layer];
-    }
     
     // setting the capture frame here serves to initialize the remaining shapelayer properties
     _videoFrame = nil;
@@ -201,20 +150,9 @@ typedef enum {
 }
 
 - (CGPathRef)newMaskPathForGuideFrame:(CGRect)guideFrame outerFrame:(CGRect)frame {
-
-  CGMutablePathRef path = CGPathCreateMutable();
-
-  CGPathMoveToPoint(path, NULL, frame.origin.x, frame.origin.y);
-  CGPathAddLineToPoint(path, NULL, frame.origin.x + frame.size.width, frame.origin.y);
-  CGPathAddLineToPoint(path, NULL, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height);
-  CGPathAddLineToPoint(path, NULL, frame.origin.x, frame.origin.y + frame.size.height);
-
-  CGPathMoveToPoint(path, NULL, guideFrame.origin.x, guideFrame.origin.y);
-  CGPathAddLineToPoint(path, NULL, guideFrame.origin.x, guideFrame.origin.y + guideFrame.size.height);
-  CGPathAddLineToPoint(path, NULL, guideFrame.origin.x + guideFrame.size.width, guideFrame.origin.y + guideFrame.size.height);
-  CGPathAddLineToPoint(path, NULL, guideFrame.origin.x + guideFrame.size.width, guideFrame.origin.y);
-
-  return path;
+  UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
+  [maskPath appendPath:[[UIBezierPath bezierPathWithRoundedRect:guideFrame cornerRadius:16] bezierPathByReversingPath]];
+  return CGPathRetain(maskPath.CGPath);
 }
 
 - (CGFloat)sizeForBounds:(CGFloat)standardSize {
@@ -289,53 +227,17 @@ typedef enum {
   }
 }
 
-- (void)animateFauxCardLayerToFrame:(CGRect)guideFrame {
-  // TODO: Use CAAnimationGroup?
-  if(CGRectIsEmpty(self.fauxCardLayer.frame)) {
-    SuppressCAAnimation(^{
-      self.fauxCardLayer.frame = guideFrame;
-    });
-  } else {
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"frame"];
-    self.fauxCardLayer.frame = guideFrame;
-    animation.fromValue = (id)[NSValue valueWithCGRect:self.fauxCardLayer.frame];
-    animation.toValue = (id)[NSValue valueWithCGRect:guideFrame];
-    animation.duration = self.animationDuration;
-    [self.fauxCardLayer addAnimation:animation forKey:@"animateFrame"];
-    self.fauxCardLayer.frame = guideFrame;
-  }
-  
-  CGPoint gradientStart = CGPointZero;
-  CGPoint gradientEnd = CGPointZero;
-  switch (self.deviceOrientation) {
-    case UIDeviceOrientationPortrait:
-      gradientStart = CGPointMake(0.5f, 0.0f); // top center
-      gradientEnd = CGPointMake(0.5f, 1.0f); // bottom center
-      break;
-    case UIDeviceOrientationPortraitUpsideDown:
-      gradientStart = CGPointMake(0.5f, 1.0f); // bottom center
-      gradientEnd = CGPointMake(0.5f, 0.0f); // top center
-      break;
-    case UIDeviceOrientationLandscapeLeft:
-      gradientStart = CGPointMake(1.0f, 0.5f);
-      gradientEnd = CGPointMake(0.0f, 0.5f);
-      break;
-    case UIDeviceOrientationLandscapeRight:
-      gradientStart = CGPointMake(0.0f, 0.5f);
-      gradientEnd = CGPointMake(1.0f, 0.5f);
-      break;
-    default:
-      break;
-  }
-  self.fauxCardLayer.startPoint = gradientStart;
-  self.fauxCardLayer.endPoint = gradientEnd;
-}
-
 - (void)animateCardMask:(CGRect)guideFrame {
   SuppressCAAnimation(^{
     self.backgroundOverlay.frame = self.bounds;
   });
   CGPathRef path = [self newMaskPathForGuideFrame:guideFrame outerFrame:self.bounds];
+  UIBezierPath *strokePath = [UIBezierPath bezierPathWithRoundedRect:guideFrame cornerRadius:16];
+  for (CAShapeLayer *layer in self.backgroundOverlay.sublayers) {
+    if ([layer.name isEqualToString:kStrokeLayerName]) {
+      layer.path = strokePath.CGPath;
+    }
+  }
   [self animateLayer:self.backgroundOverlay toNewPath:path];
   CGPathRelease(path);
 }
@@ -347,30 +249,7 @@ typedef enum {
     // we never animate to or from an empty frame, which looks odd.
     return;
   }
-  
-  CGPoint portraitTopLeft = CGPointMake(CGRectGetMinX(guideFrame), CGRectGetMinY(guideFrame));
-  CGPoint portraitTopRight = CGPointMake(CGRectGetMaxX(guideFrame), CGRectGetMinY(guideFrame));
-  CGPoint portraitBottomLeft = CGPointMake(CGRectGetMinX(guideFrame), CGRectGetMaxY(guideFrame));
-  CGPoint portraitBottomRight = CGPointMake(CGRectGetMaxX(guideFrame), CGRectGetMaxY(guideFrame));
-  
-  // All following code assumes a permanent UIInterfaceOrientationLandscapeRight -- adjust from
-  // UIInterfaceOrientationPortrait, which is easiest to think about.
-  
-  CGPoint topLeft = portraitTopRight;
-  CGPoint topRight = portraitBottomRight;
-  CGPoint bottomLeft = portraitTopLeft;
-  CGPoint bottomRight = portraitBottomLeft;
-  
-  [self animateEdgeLayer:self.topLayer toPathFromPoint:topLeft toPoint:topRight adjustedBy:[self landscapeHEdgeAdj]];
-  [self animateEdgeLayer:self.bottomLayer toPathFromPoint:bottomLeft toPoint:bottomRight adjustedBy:[self landscapeHEdgeAdj]];
-  [self animateEdgeLayer:self.leftLayer toPathFromPoint:bottomLeft toPoint:topLeft adjustedBy:[self landscapeVEdgeAdj]];
-  [self animateEdgeLayer:self.rightLayer toPathFromPoint:bottomRight toPoint:topRight adjustedBy:[self landscapeVEdgeAdj]];
-  
-  [self animateCornerLayer:self.topLeftLayer atPoint:topLeft withPositionType:kTopLeft];
-  [self animateCornerLayer:self.topRightLayer atPoint:topRight withPositionType:kTopRight];
-  [self animateCornerLayer:self.bottomLeftLayer atPoint:bottomLeft withPositionType:kBottomLeft];
-  [self animateCornerLayer:self.bottomRightLayer atPoint:bottomRight withPositionType:kBottomRight];
-  
+
   [self animateCardMask:guideFrame];
 }
 
@@ -399,42 +278,11 @@ typedef enum {
   return [[self class] guideFrameForDeviceOrientation:self.deviceOrientation inViewWithSize:self.bounds.size];
 }
 
-- (void)updateStrokes {
-  if (self.guidesLockedOn) {
-    self.topLayer.hidden = NO;
-    self.rightLayer.hidden = NO;
-    self.bottomLayer.hidden = NO;
-    self.leftLayer.hidden = NO;
-  } else {
-    if (self.edgeScoreTop > kEdgeOnThreshold) {
-      self.topLayer.hidden = NO;
-    } else if(self.edgeScoreTop < kEdgeOffThreshold) {
-      self.topLayer.hidden = YES;
-    }
-    if (self.edgeScoreRight > kEdgeOnThreshold) {
-      self.rightLayer.hidden = NO;
-    } else if(self.edgeScoreRight < kEdgeOffThreshold) {
-      self.rightLayer.hidden = YES;
-    }
-    if (self.edgeScoreBottom > kEdgeOnThreshold) {
-      self.bottomLayer.hidden = NO;
-    } else if(self.edgeScoreBottom < kEdgeOffThreshold) {
-      self.bottomLayer.hidden = YES;
-    }
-    if (self.edgeScoreLeft > kEdgeOnThreshold) {
-      self.leftLayer.hidden = NO;
-    } else if(self.edgeScoreLeft < kEdgeOffThreshold) {
-      self.leftLayer.hidden = YES;
-    }
-  }
-}
-
 - (void)didRotateToDeviceOrientation:(UIDeviceOrientation)deviceOrientation {
   [self setNeedsLayout];
 
   if (deviceOrientation != self.deviceOrientation) {
     self.deviceOrientation = deviceOrientation;
-    [self animateFauxCardLayerToFrame:self.guideFrame];
 #if CARDIO_DEBUG
     [self rotateDebugOverlay];
 #endif
@@ -459,8 +307,6 @@ typedef enum {
   self.edgeScoreBottom = kEdgeDecay * self.edgeScoreBottom + (1 - kEdgeDecay) * (newFrame.foundBottomEdge ? 1.0f : -1.0f);
   self.edgeScoreLeft = kEdgeDecay * self.edgeScoreLeft + (1 - kEdgeDecay) * (newFrame.foundLeftEdge ? 1.0f : -1.0f);
 
-  [self updateStrokes];
-
   // Update the scores with our decay factor
   float allEdgesFoundScore = (newFrame.foundAllEdges ? 1.0f : 0.0f);
   self.allEdgesFoundDecayedScore = kAllEdgesFoundScoreDecay * self.allEdgesFoundDecayedScore + (1.0f - kAllEdgesFoundScoreDecay) * allEdgesFoundScore;
@@ -477,36 +323,9 @@ typedef enum {
 #endif
 }
 
-- (void)setGuideColor:(UIColor *)newGuideColor {
-  if(!newGuideColor) {
-    [self setGuideColor:kDefaultGuideColor];
-    return;
-  }
-
-  _guideColor = newGuideColor;
-  
-  NSArray *edgeLayers = [NSArray arrayWithObjects:
-                         self.topLayer,
-                         self.bottomLayer,
-                         self.leftLayer,
-                         self.rightLayer,
-                         self.topLeftLayer,
-                         self.topRightLayer,
-                         self.bottomLeftLayer,
-                         self.bottomRightLayer,
-                         nil];
-
-  SuppressCAAnimation(^{
-    for(CAShapeLayer *layer in edgeLayers) {
-      layer.strokeColor = self.guideColor.CGColor;
-    }
-  });
-}
-
 - (void)layoutSublayers {
   SuppressCAAnimation(^{
     [self setLayerPaths];
-    [self animateFauxCardLayerToFrame:self.guideFrame];
     
     CGRect guideFrame = [self guideFrame];
     CGFloat left = CGRectGetMinX(guideFrame);
@@ -525,13 +344,11 @@ typedef enum {
 }
 
 - (void)showCardFound:(BOOL)found {
-  self.guidesLockedOn = found;
   if (found) {
     self.backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.8f].CGColor;
   } else {
-    self.backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.0f].CGColor;
+    self.backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.5f].CGColor;
   }
-  [self updateStrokes];
 }
 
 @end

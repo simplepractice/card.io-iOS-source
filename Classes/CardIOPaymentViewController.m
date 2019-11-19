@@ -112,24 +112,10 @@
   }
   
   self.navigationBar.barStyle = self.context.navigationBarStyleForCardIO;
-  if (iOS_7_PLUS) {
-    self.navigationBar.barTintColor = self.context.navigationBarTintColorForCardIO;
-  }
-  else {
-    self.navigationBar.tintColor = self.context.navigationBarTintColorForCardIO;
-  }
+  self.navigationBar.barTintColor = self.context.navigationBarTintColorForCardIO;
 
   [super viewWillAppear:animated];
 
-  if (self.modalPresentationStyle == UIModalPresentationFullScreen && !self.context.keepStatusBarStyleForCardIO) {
-    if (iOS_7_PLUS) {
-      [theApp setStatusBarStyle:UIStatusBarStyleDefault animated:animated];
-    }
-    else {
-      [theApp setStatusBarStyle:UIStatusBarStyleLightContent animated:animated];
-    }
-  }
-  
   // Write console message for confused developers who have given us confusing directives
   if (self.suppressScanConfirmation && (self.collectExpiry || self.collectCVV || self.collectPostalCode || self.collectCardholderName)) {
     NSMutableString *collect = [NSMutableString string];
@@ -171,17 +157,6 @@
   }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  if (self.modalPresentationStyle == UIModalPresentationFullScreen) {
-    [[UIApplication sharedApplication] setStatusBarStyle:self.originalStatusBarStyle animated:animated];
-    [[UIApplication sharedApplication] setStatusBarHidden:self.statusBarWasOriginallyHidden withAnimation:UIStatusBarAnimationFade];
-    if (iOS_7_PLUS) {
-      [self setNeedsStatusBarAppearanceUpdate];
-    }
-  }
-}
-
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -208,15 +183,6 @@
 
 - (UIColor *)navigationBarTintColor {
   return self.navigationBarTintColorForCardIO;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-  if (self.currentViewControllerIsDataEntry) {
-    return YES;
-  }
-  else {
-    return [self isBeingPresentedModally] || (toInterfaceOrientation == UIInterfaceOrientationPortrait);
-  }
 }
 
 - (BOOL)shouldAutorotate {

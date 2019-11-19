@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    tags:
+      - "iOS_*"
+
+jobs:
+  build:
+
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+        token: ${{ github.token }}
+
+    - name: Setup Python environment
+      uses: actions/setup-python@v1.1.1
+      with:
+        python-version: '2.x'
+
+    - name: Install Dependencies
+      run: pip install -r pip_requirements.txt
+  
+    - name: Preparing Baler
+      run: echo 'export PATH=$PATH:'`dirname \`which bale\`` > .baler_env
+
+    - name: Building
+      run: fab build:outdir=~
+      
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./cardio-release.zip
+        asset_name: cardio-release.zip
+        asset_content_type: application/zip

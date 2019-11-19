@@ -52,7 +52,7 @@
   NSString *choice = nil;
   BOOL isSame = NO;
   if (indexPath.row == 0) {
-    choice = @"device settings";
+    choice = [NSString localizedStringWithFormat:@"device settings"];
     if (![self.currentSelection length]) {
       isSame = YES;
     }
@@ -90,8 +90,9 @@
   
   float delayInSeconds = 0.3f;
   dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+  __weak iccChoicesSelectViewController *weakSelf = self;
   dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-    _completion(_currentSelection);
+    weakSelf.completion(weakSelf.currentSelection);
   });
   
 }

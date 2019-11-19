@@ -128,7 +128,8 @@ def build(outdir=None, device_sdk=None, simulator_sdk=None, **kwargs):
     simulator_sdk = simulator_sdk or "iphonesimulator"
 
     arch_to_sdk = (
-                   ("i386", simulator_sdk),
+                   ("arm64", device_sdk),
+                   ("arm64e", device_sdk),
                    ("x86_64", simulator_sdk)
                   )
 
@@ -162,16 +163,6 @@ def build(outdir=None, device_sdk=None, simulator_sdk=None, **kwargs):
                 build_config = "Release"
                 arch_build_dirs = {}
 
-                # Build the Archive release
-                print(colors.blue("({build_config}) Building Archive (arm* architectures specified in build config)".format(**locals())))
-                base_xcodebuild_command = "xcrun xcodebuild -scheme \"CardIO Static Library\" -target CardIO-static -configuration {build_config} archive".format(**locals())
-                build_dir = os.path.join(temp_dir, build_config, "Archive")
-                arch_build_dirs["archive"] = build_dir
-                os.makedirs(build_dir)
-                parallelize = "" if env.verbose else "-parallelizeTargets"  # don't parallelize verbose builds, it's hard to read the output
-                build_cmd = "{base_xcodebuild_command} {parallelize} CONFIGURATION_BUILD_DIR={build_dir}  {extra_xcodebuild_settings}".format(**locals())
-                local(build_cmd)
-
                 for arch, sdk in arch_to_sdk:
                     print(colors.blue("({build_config}) Building {arch}".format(**locals())))
 
@@ -186,19 +177,18 @@ def build(outdir=None, device_sdk=None, simulator_sdk=None, **kwargs):
                     parallelize = "" if env.verbose else "-parallelizeTargets"  # don't parallelize verbose builds, it's hard to read the output
                     build_cmd = "{base_xcodebuild_command} {parallelize} CONFIGURATION_BUILD_DIR={build_dir}  {extra_xcodebuild_settings}".format(**locals())
                     local(build_cmd)
-
+                    
                 print(colors.blue("({build_config}) Lipoing".format(**locals())))
                 lipo_dir = os.path.join(temp_dir, build_config, "universal")
                 lipo_build_dirs[build_config] = lipo_dir
                 os.makedirs(lipo_dir)
                 arch_build_dirs["universal"] = lipo_dir
-                # in Xcode 4.5 GM, xcrun selects the wrong lipo to use, so circumventing xcrun for now :(
-                lipo_cmd = "`xcode-select -print-path`/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo " \
-                           "           {archive}/{libname}" \
-                           "           -arch i386 {i386}/{libname}" \
-                           "           -arch x86_64 {x86_64}/{libname}" \
+                lipo_cmd = "xcrun lipo " \
                            "           -create" \
-                           "           -output {universal}/{libname}".format(libname=env.libname, **arch_build_dirs)
+                           "           -output {universal}/{libname}" \
+                           "           -arch arm64 {arm64}/{libname}" \
+                           "           -arch arm64e {arm64e}/{libname}" \
+                           "           -arch x86_64 {x86_64}/{libname}".format(libname=env.libname, **arch_build_dirs)
                 local(lipo_cmd)
 
                 print(colors.blue("({build_config}) Stripping debug symbols".format(**locals())))
@@ -235,3 +225,5 @@ def build(outdir=None, device_sdk=None, simulator_sdk=None, **kwargs):
                 shutil.copy2(os.path.join(release_dir, "CardIO/CardIO.m"), os.path.join(sdk_dir, "CardIO"))
                 shutil.copytree(os.path.join(release_dir, "SampleApp"), os.path.join(sdk_dir, "SampleApp"), ignore=shutil.ignore_patterns(".DS_Store"))
                 shutil.copytree(os.path.join(release_dir, "SampleApp-Swift"), os.path.join(sdk_dir, "SampleApp-Swift"), ignore=shutil.ignore_patterns(".DS_Store"))
+                
+                shutil.make_archive("cardio-release", "zip", sdk_dir)

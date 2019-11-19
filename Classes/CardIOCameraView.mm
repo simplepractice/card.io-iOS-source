@@ -105,7 +105,6 @@
     self.cardGuide.needsDisplayOnBoundsChange = YES;
     self.cardGuide.animationDuration = kRotationAnimationDuration;
     self.cardGuide.deviceOrientation = self.deviceOrientation;
-    self.cardGuide.guideColor = config.guideColor;
     [self.layer addSublayer:self.cardGuide];
 
     NSString *scanInstructions = nil;
@@ -194,14 +193,6 @@
   return self.videoStream.scanner;
 }
 
-- (void)setSuppressFauxCardLayer:(BOOL)suppressFauxCardLayer {
-  if(suppressFauxCardLayer) {
-    self.cardGuide.fauxCardLayer.hidden = YES;
-  }
-  _suppressFauxCardLayer = suppressFauxCardLayer;
-}
-
-
 - (CGRect)guideFrame {
   return [self.cardGuide guideFrame];
 }
@@ -261,13 +252,13 @@
       self.logoView.hidden = YES;
       self.lightButton.hidden = YES;
 #if CARDIO_DEBUG
-      _debugTextField.hidden = YES;
+      self->_debugTextField.hidden = YES;
 #endif
     } else {
       self.logoView.hidden = NO;
       self.lightButton.hidden = NO;
 #if CARDIO_DEBUG
-      _debugTextField.hidden = NO;
+      self->_debugTextField.hidden = NO;
 #endif
     }
   });
