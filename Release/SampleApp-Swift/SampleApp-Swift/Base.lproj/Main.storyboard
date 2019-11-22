@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="13F1077" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -13,44 +16,42 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Result will display here" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RN3-ZX-uyW">
-                                <rect key="frame" x="150" y="88" width="300" height="276"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6wu-dt-vfp">
+                                <rect key="frame" x="152" y="60" width="71" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="276" id="mjc-II-4T7"/>
-                                    <constraint firstAttribute="width" constant="300" id="saB-lV-1Ja"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" id="ATE-5R-x4a"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6wu-dt-vfp">
-                                <rect key="frame" x="264" y="75" width="73" height="25"/>
                                 <state key="normal" title="Scan Card">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
-                                    <action selector="scanCard:" destination="BYZ-38-t0r" eventType="touchUpInside" id="P1a-WQ-rdL"/>
+                                    <action selector="scanCardWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="6hR-yc-259"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Result will display here" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RN3-ZX-uyW">
+                                <rect key="frame" x="16" y="106" width="343" height="20.333333333333329"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" id="WGt-e3-nTi"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="centerX" secondItem="RN3-ZX-uyW" secondAttribute="centerX" id="9NV-Wg-jNb"/>
-                            <constraint firstItem="RN3-ZX-uyW" firstAttribute="top" secondItem="6wu-dt-vfp" secondAttribute="bottom" constant="8" symbolic="YES" id="Gc5-Cp-AzK"/>
-                            <constraint firstAttribute="centerY" secondItem="RN3-ZX-uyW" secondAttribute="centerY" constant="74" id="IpO-6t-Ids"/>
-                            <constraint firstAttribute="centerX" secondItem="6wu-dt-vfp" secondAttribute="centerX" id="QG3-P9-yf4"/>
-                            <constraint firstItem="6wu-dt-vfp" firstAttribute="centerX" secondItem="RN3-ZX-uyW" secondAttribute="centerX" id="Uh4-u3-RjP"/>
-                            <constraint firstItem="6wu-dt-vfp" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="75" id="u8l-Wq-ERk"/>
+                            <constraint firstItem="6wu-dt-vfp" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="2AO-Bg-s3h"/>
+                            <constraint firstItem="6wu-dt-vfp" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="16" id="O0l-Pc-lKc"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" relation="greaterThanOrEqual" secondItem="RN3-ZX-uyW" secondAttribute="bottom" constant="16" id="aLV-8U-cKK"/>
+                            <constraint firstItem="RN3-ZX-uyW" firstAttribute="top" secondItem="6wu-dt-vfp" secondAttribute="bottom" constant="16" id="ggI-cf-Hat"/>
+                            <constraint firstAttribute="trailing" secondItem="RN3-ZX-uyW" secondAttribute="trailing" constant="16" id="ibs-Pk-ujR"/>
+                            <constraint firstItem="6wu-dt-vfp" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="iuq-JX-Dcv"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="6wu-dt-vfp" secondAttribute="trailing" constant="16" id="n8z-GV-z5y"/>
+                            <constraint firstItem="RN3-ZX-uyW" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="o7f-tp-0Od"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="Gc5-Cp-AzK"/>
-                                <exclude reference="Uh4-u3-RjP"/>
-                            </mask>
-                        </variation>
                     </view>
                     <connections>
                         <outlet property="resultLabel" destination="RN3-ZX-uyW" id="jVY-aE-csY"/>
@@ -58,6 +59,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="34" y="31"/>
         </scene>
     </scenes>
 </document>
