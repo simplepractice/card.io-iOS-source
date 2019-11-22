@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="2">
+    <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="4">
+            <objects>
+                <viewController id="2" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ZZe-hU-CRZ"/>
+                        <viewControllerLayoutGuide type="bottom" id="J4S-Tm-ZQs"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="5">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TAk-ll-WsT">
+                                <rect key="frame" x="277" y="128" width="214" height="30"/>
+                                <state key="normal" title="scan a credit card using card.io">
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="scanCardClicked:" destination="2" eventType="touchUpInside" id="bSe-1X-6T7"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KUq-Vr-Fvi">
+                                <rect key="frame" x="16" y="174" width="736" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="TAk-ll-WsT" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="5" secondAttribute="leading" constant="16" id="63n-vz-BcA"/>
+                            <constraint firstItem="TAk-ll-WsT" firstAttribute="centerX" secondItem="5" secondAttribute="centerX" id="Ene-3i-hRm"/>
+                            <constraint firstAttribute="trailing" secondItem="KUq-Vr-Fvi" secondAttribute="trailing" constant="16" id="LCn-if-eGs"/>
+                            <constraint firstItem="KUq-Vr-Fvi" firstAttribute="leading" secondItem="5" secondAttribute="leading" constant="16" id="O5N-5a-Ax1"/>
+                            <constraint firstItem="KUq-Vr-Fvi" firstAttribute="top" secondItem="TAk-ll-WsT" secondAttribute="bottom" constant="16" id="SrN-ts-iB8"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="TAk-ll-WsT" secondAttribute="trailing" constant="16" id="UPd-mG-3pz"/>
+                            <constraint firstItem="TAk-ll-WsT" firstAttribute="top" secondItem="ZZe-hU-CRZ" secondAttribute="bottom" constant="128" id="krE-ca-0W7"/>
+                            <constraint firstItem="J4S-Tm-ZQs" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KUq-Vr-Fvi" secondAttribute="bottom" constant="16" id="oXg-52-WVL"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="infoLabel" destination="KUq-Vr-Fvi" id="st9-x5-9IB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="139" y="140"/>
+        </scene>
+    </scenes>
+</document>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="2">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="5">
+            <objects>
+                <viewController id="2" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="kYN-ff-S8D"/>
+                        <viewControllerLayoutGuide type="bottom" id="Sbl-YW-Buz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFy-6H-E5Q">
+                                <rect key="frame" x="16" y="60" width="382" height="30"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="scan a credit card using card.io">
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="scanCardClicked:" destination="2" eventType="touchDown" id="RKe-9Z-BUB"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rxz-df-mJa">
+                                <rect key="frame" x="16" y="106" width="382" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Rxz-df-mJa" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="16" id="BHk-3f-2Wq"/>
+                            <constraint firstItem="gFy-6H-E5Q" firstAttribute="top" secondItem="kYN-ff-S8D" secondAttribute="bottom" constant="16" id="KBB-ms-gRl"/>
+                            <constraint firstItem="Rxz-df-mJa" firstAttribute="top" secondItem="gFy-6H-E5Q" secondAttribute="bottom" constant="16" id="Q7D-jY-pjA"/>
+                            <constraint firstItem="Sbl-YW-Buz" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Rxz-df-mJa" secondAttribute="bottom" constant="16" id="Wn3-72-biD"/>
+                            <constraint firstAttribute="trailing" secondItem="gFy-6H-E5Q" secondAttribute="trailing" constant="16" id="d2f-nG-bh4"/>
+                            <constraint firstAttribute="trailing" secondItem="Rxz-df-mJa" secondAttribute="trailing" constant="16" id="uge-ac-Hm1"/>
+                            <constraint firstItem="gFy-6H-E5Q" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="16" id="zdQ-Ot-xCZ"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="infoLabel" destination="Rxz-df-mJa" id="lqL-bP-9up"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="34" y="31"/>
+        </scene>
+    </scenes>
+</document>
